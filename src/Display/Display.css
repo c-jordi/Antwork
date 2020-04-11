@@ -1,0 +1,46 @@
+.display {
+	position: relative;
+	display: flex;
+	flex-direction: row;
+	border-radius: 5px;
+	overflow: hidden;
+}
+
+.menu {
+	display: flex;
+	flex-direction: column;
+	background-color: #20232a;
+}
+
+@media screen and (min-width: 0px) and (max-width: 700px) {
+	.display {
+		flex-direction: column;
+		width: 100%;
+	}
+	.menu {
+		flex-direction: row;
+		justify-content: center;
+	}
+}
+
+.l-menu {
+}
+
+.menu-item {
+	height: 100px;
+	width: 100px;
+	color: white;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+}
+
+.menu-item:hover {
+	background-color: #2196f3;
+}
+
+.active {
+	background-color: #30333a !important;
+	border-left: 1px;
+}

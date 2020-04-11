@@ -1,0 +1,144 @@
+.switch {
+	position: relative;
+	display: inline-block;
+	width: 40px;
+	height: 24px;
+	float: right;
+}
+
+.switch input {
+	opacity: 0;
+	width: 0;
+	height: 0;
+}
+
+.slider {
+	position: absolute;
+	cursor: pointer;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background-color: #ccc;
+	-webkit-transition: 0.4s;
+	transition: 0.4s;
+}
+
+.slider:before {
+	position: absolute;
+	content: "";
+	height: 18px;
+	width: 18px;
+	left: 3px;
+	bottom: 3px;
+	background-color: white;
+	-webkit-transition: 0.4s;
+	transition: 0.4s;
+}
+
+input:checked + .slider {
+	background-color: #2196f3;
+}
+
+input:focus + .slider {
+	box-shadow: 0 0 1px #2196f3;
+}
+
+input:checked + .slider:before {
+	-webkit-transform: translateX(16px);
+	-ms-transform: translateX(16px);
+	transform: translateX(16px);
+}
+
+/* Rounded sliders */
+.slider.round {
+	border-radius: 34px;
+}
+
+.slider.round:before {
+	border-radius: 50%;
+}
+
+.input-container {
+	margin-top: 8px;
+	margin-bottom: 8px;
+}
+
+.input-label {
+	display: inline-block;
+	color: white;
+	font-size: 16px;
+	margin-top: 3px;
+}
+
+.text-input {
+	float: right;
+	max-width: 54px;
+	height: 24px;
+	background-color: transparent;
+	border: none;
+	color: #2196f3;
+	font-family: monospace;
+	text-align: center;
+	font-size: 18px;
+	outline: none;
+}
+
+.number-input {
+	float: right;
+	max-width: 54px;
+	height: 24px;
+	background-color: transparent;
+	border: none;
+	color: #2196f3;
+	font-family: monospace;
+	text-align: right;
+	font-size: 18px;
+	outline: none;
+}
+
+.color-input {
+	float: right;
+	max-width: 84px;
+	height: 24px;
+	background-color: transparent;
+	border: none;
+	color: #737373;
+	font-family: monospace;
+	text-align: right;
+	font-size: 18px;
+	outline: none;
+}
+
+.text-input:focus {
+	border: none;
+	outline: none;
+}
+
+.pair-input {
+	float: right;
+}
+.pair-input > .number-input {
+	float: none;
+}
+
+.submit-button {
+	font-size: 16px;
+	border: none;
+	background-color: #2196f3;
+	font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+	color: white;
+	float: right;
+	padding: 5px 13px;
+	border-radius: 60px;
+	margin-top: 30px;
+	cursor: pointer;
+}
+
+button:hover {
+	background-color: #0d86e6;
+}
+
+button:focus {
+	outline: none;
+}

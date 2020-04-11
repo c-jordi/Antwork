@@ -1,0 +1,34 @@
+.stage-container {
+	position: relative;
+	left: 0;
+	top: 0;
+	width: 100%;
+	overflow: hidden;
+}
+
+.stage-overlay {
+	position: absolute;
+	right: 0;
+	top: 0;
+	height: 50px;
+	width: 200px;
+	color: red;
+	font-family: monospace;
+	z-index: 10;
+}
+
+.start-button {
+	font-family: monospace;
+	text-transform: uppercase;
+	color: white;
+	position: absolute;
+	border: none;
+	top: 50%;
+	z-index: 40;
+	left: 50%;
+	background-color: rgb(33, 150, 243);
+	padding: 1rem;
+	border-radius: 2rem;
+	font-size: 2rem;
+	transform: translate(-50%, -50%);
+}

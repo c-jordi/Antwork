@@ -1,0 +1,60 @@
+.control-bar {
+	display: flex;
+	text-align: center;
+	align-items: center;
+	height: 40px;
+	min-width: 200px;
+	border-radius: 5px;
+	color: white;
+	padding-left: 15px;
+	padding-right: 15px;
+	float: grow 1px;
+}
+
+.control-bar > *:first-child {
+	margin-left: 0px;
+}
+
+.control-bar > *:last-child {
+	margin-right: 0px;
+}
+
+.control-bar > * {
+	margin: 0 7px;
+}
+
+.control-btn {
+	cursor: pointer;
+}
+
+.control-btn:hover {
+	opacity: 0.7;
+}
+
+.preview {
+	display: flex;
+	flex-direction: row;
+}
+
+.preview > .label {
+	text-transform: uppercase;
+
+	font-family: monospace;
+}
+
+.progress-container {
+	position: relative;
+	height: 15px;
+	background-color: #87caff;
+	border-radius: 5px;
+	min-width: 70px;
+	flex-grow: 1;
+	margin: auto 10px;
+	overflow: hidden;
+}
+
+.progress-fill {
+	position: absolute;
+	height: 15px;
+	background-color: #2196f3;
+}

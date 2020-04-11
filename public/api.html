@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+	<head lang="en">
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width" />
+		<title>rollup-starter-app</title>
+
+		<style>
+			body {
+				font-family: "Helvetica Neue", Arial, sans-serif;
+				color: #333;
+				font-weight: 300;
+				font-family: "monospace";
+			}
+			.p-container {
+				width: 400px;
+				border: black 1px solid;
+				height: 20px;
+				border-radius: 6px;
+				overflow: hidden;
+			}
+			#p-bar {
+				background-color: rgb(33, 150, 243)
+				height: 100%;
+				width: 0%;
+			}
+		</style>
+	</head>
+	<body>
+		<h1>Antwork API</h1>
+
+		<div class="progress">
+			<span class="label">Progress:</span>
+			<div class="p-container"><div id="p-bar" data-progress="0"></div></div>
+		</div>
+		<div id="simulation-desc">
+			Frames: <span id="frames"></span> Runs: <span id="runs"></span> Ants:
+			<span id="ants"></span> Size: <span id="size"></span>
+		</div>
+		<script src="api.js"></script>
+	</body>
+</html>

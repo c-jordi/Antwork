@@ -1,0 +1,64 @@
+.screen {
+	position: relative;
+	user-select: none;
+	background-color: #282c34;
+}
+
+.page-overlay {
+	position: absolute;
+	top: 0;
+	width: 100%;
+	height: 0px;
+	transition-duration: 0.2s;
+	background-color: #30333a;
+	z-index: 10;
+	overflow-x: hidden;
+	overflow-y: scroll;
+}
+
+.page-overlay::-webkit-scrollbar {
+	display: none;
+}
+
+.page-container {
+	padding: 30px;
+	text-align: left;
+	transition-delay: 0.2s;
+}
+
+.page > .title {
+	color: #63baff;
+	font-size: 20px;
+	font-weight: 200;
+}
+
+.body > .subtitle {
+	margin-top: 10px;
+	color: #63baff;
+	font-size: 15px;
+	font-weight: 200;
+}
+
+.white {
+	color: white !important;
+}
+
+.page > .body {
+	color: #dcdcdc;
+	font-family: monospace;
+	font-size: 1;
+}
+
+.body > .row {
+	display: flex;
+	flex-direction: row;
+}
+.row > .col {
+	width: 50%;
+	padding-right: 15px;
+}
+
+.col:last-child {
+	padding-right: 0;
+	padding-left: 15px;
+}

@@ -1,0 +1,7 @@
+.preview {
+	box-sizing: border-box;
+	padding: 2vw;
+	max-width: 700px;
+	background-color: lightgrey;
+	width: 100%;
+}
