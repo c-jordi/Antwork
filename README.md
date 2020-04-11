@@ -1,4 +1,6 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# Antwork:
+
+Welcome! Antwork is a brownian agent simulation tool that was developed in the context of a semester project during my masters.
 
 ## Available Scripts
 
