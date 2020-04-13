@@ -6,7 +6,7 @@ function Euler(env, walkers) {
 	this.timeMap = [0];
 }
 
-Euler.prototype.run = function() {
+Euler.prototype.run = function () {
 	this.computeFieldsDx(0, 0);
 	this.computeFieldsDt(0, 0);
 	this.computeWalkersDr(0, 0);
@@ -15,7 +15,7 @@ Euler.prototype.run = function() {
 	this.env.timeSinceStart++;
 };
 
-Euler.prototype.computeEulerFields = function() {
+Euler.prototype.computeEulerFields = function () {
 	const computeEulerField = (state, x, y) => {
 		this.env.fields[state][0][x][y] =
 			this.env.fields[state][0][x][y] + this.env.fieldsDt[state][0][x][y];
@@ -24,30 +24,30 @@ Euler.prototype.computeEulerFields = function() {
 	this.env.apply(computeEulerField);
 };
 
-Euler.prototype.computeEulerWalkers = function() {
-	const computeEulerWalker = walker => {
+Euler.prototype.getPosition = function () {};
+
+Euler.prototype.computeEulerWalkers = function () {
+	const computeEulerWalker = (walker) => {
 		walker.timeSinceCollision += 1;
 		walker.x =
-			(((walker.x + walker.dr[0][0]) % this.env.size[0]) + this.env.size[0]) %
-			this.env.size[0];
+			(walker.x + walker.dr[0][0] + this.env.size[0]) % this.env.size[0];
 		walker.y =
-			(((walker.y + walker.dr[0][1]) % this.env.size[1]) + this.env.size[1]) %
-			this.env.size[1];
+			(walker.y + walker.dr[0][1] + this.env.size[1]) % this.env.size[1];
 
 		this.env.assignState(walker);
 	};
 	this.walkers.apply(computeEulerWalker);
 };
 
-Euler.prototype.computeWalkersDr = function(inputFrame, outputFrame) {
-	const computeWalkerDr = walker => {
+Euler.prototype.computeWalkersDr = function (inputFrame, outputFrame) {
+	const computeWalkerDr = (walker) => {
 		const fieldWalkerStep = (state, x, y) => {
 			if (state == 0) return [0, 0];
 			const fieldState = state == "negative" ? "positive" : "negative";
 			const [latx, laty] = this.env.setPosition(x, y);
 
 			return this.env.fieldsDx[fieldState][inputFrame][latx][laty].map(
-				el => el * this.env.alpha
+				(el) => el * this.env.alpha
 			);
 		};
 
@@ -58,14 +58,14 @@ Euler.prototype.computeWalkersDr = function(inputFrame, outputFrame) {
 		if (this.env.position == "discrete") {
 			const discreteStep = this.env.discreteStep([
 				fieldStep[0] + noiseStep[0],
-				fieldStep[1] + noiseStep[1]
+				fieldStep[1] + noiseStep[1],
 			]);
 
 			walker.dr[outputFrame] = discreteStep;
 		} else {
 			walker.dr[outputFrame] = [
 				fieldStep[0] + noiseStep[0],
-				fieldStep[1] + noiseStep[1]
+				fieldStep[1] + noiseStep[1],
 			];
 		}
 
@@ -75,7 +75,7 @@ Euler.prototype.computeWalkersDr = function(inputFrame, outputFrame) {
 		} else if (fieldNoiseRatio > 1 && fieldNoiseRatio < 2) {
 			walker.pathColor = [
 				255,
-				...[255, 255].map(el => el * (2 - fieldNoiseRatio))
+				...[255, 255].map((el) => el * (2 - fieldNoiseRatio)),
 			];
 		} else {
 			walker.pathColor = [255, 0, 0];
@@ -85,12 +85,12 @@ Euler.prototype.computeWalkersDr = function(inputFrame, outputFrame) {
 	this.walkers.apply(computeWalkerDr);
 };
 
-Euler.prototype.computeFieldsDt = function(inputFrame, outputFrame) {
+Euler.prototype.computeFieldsDt = function (inputFrame, outputFrame) {
 	this.addResidues(inputFrame, outputFrame);
 	this.addEmissions(inputFrame, outputFrame);
 };
 
-Euler.prototype.addResidues = function(inputFrame, outputFrame) {
+Euler.prototype.addResidues = function (inputFrame, outputFrame) {
 	const addResidue = (state, x, y) => {
 		this.env.fieldsDt[state][outputFrame][x][y] =
 			-this.env.k * this.env.fields[state][inputFrame][x][y];
@@ -99,13 +99,13 @@ Euler.prototype.addResidues = function(inputFrame, outputFrame) {
 	this.env.apply(addResidue);
 };
 
-Euler.prototype.addEmissions = function(inputFrame, outputFrame) {
-	const addEmission = walker => {
+Euler.prototype.addEmissions = function (inputFrame, outputFrame) {
+	const addEmission = (walker) => {
 		const [state, x, y, timeSinceCollision] = [
 			walker.state,
 			walker.x,
 			walker.y,
-			walker.timeSinceCollision
+			walker.timeSinceCollision,
 		];
 		const [latx, laty] = this.env.setPosition(x, y);
 
@@ -119,7 +119,7 @@ Euler.prototype.addEmissions = function(inputFrame, outputFrame) {
 	this.walkers.apply(addEmission);
 };
 
-Euler.prototype.computeFieldsDx = function(inputFrame, outputFrame) {
+Euler.prototype.computeFieldsDx = function (inputFrame, outputFrame) {
 	const computePointDx = (state, x, y) => {
 		const x_minus = (x - 1 + this.env.size[0]) % this.env.size[0];
 		const x_plus = (x + 1 + this.env.size[0]) % this.env.size[0];

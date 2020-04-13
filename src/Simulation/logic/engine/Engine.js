@@ -11,14 +11,13 @@ function Engine(env, walkers, engine = "euler", database, analysis) {
 	this.counter = 0;
 }
 
-Engine.prototype.restart = function() {
+Engine.prototype.restart = function () {
 	this.env.clear();
 	this.walkers.reset();
-	this.analysis.clear();
 	this.counter = 0;
 };
 
-Engine.prototype.setup = function() {
+Engine.prototype.setup = function () {
 	switch (this.engine) {
 		case "euler":
 			this.engine = new Euler(this.env, this.walkers);
@@ -31,7 +30,7 @@ Engine.prototype.setup = function() {
 	}
 };
 
-Engine.prototype.next = function() {
+Engine.prototype.next = function () {
 	if (!this.running) return;
 	this.env.init();
 	this.counter++;
@@ -41,20 +40,20 @@ Engine.prototype.next = function() {
 	this.walkers.resetDr();
 };
 
-Engine.prototype.toggle = function() {
+Engine.prototype.toggle = function () {
 	this.running = !this.running;
 };
 
-Engine.prototype.stop = function() {
+Engine.prototype.stop = function () {
 	this.running = false;
 };
 
-Engine.prototype.saveMetrics = function() {
-	const saveStepSize = walker => {
+Engine.prototype.saveMetrics = function () {
+	const saveStepSize = (walker) => {
 		const stepSize = Math.sqrt(walker.dr[0][0] ** 2 + walker.dr[0][1] ** 2);
 		this.database.save("stepSize", stepSize);
 	};
-	this.walkers.apply(saveStepSize);
+	// this.walkers.apply(saveStepSize);
 };
 
 export default Engine;

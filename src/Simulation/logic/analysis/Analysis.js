@@ -1,18 +1,22 @@
 import generateField from "../utils/generateField";
 import Connectivity from "./Connectivity";
+import { uuid } from "../utils/tools";
 
-function Analysis(env, walkers, nodes, database) {
+function Analysis(env, walkers, nodes, database, events = []) {
 	this.env = env;
 	this.walkers = walkers;
 	this.database = database;
 	this.nodes = nodes;
-
+	this.version = uuid();
+	this.sessions = [this.version];
 	this.combinedField = generateField(this.env.size, 0);
 	this.maxima = {
 		max: 1,
-		min: 0
+		min: 0,
 	};
 	this.maxMinThreshold = 1000;
+	this.interval = 10;
+	this.events = [];
 
 	this.displayOptions = {
 		showWalkers: false,
@@ -23,7 +27,7 @@ function Analysis(env, walkers, nodes, database) {
 		defaultColor: "#ffffff",
 		positiveColor: "#f6ff33",
 		negativeColor: "#33fff0",
-		combinedColor: "#6a0dad"
+		combinedColor: "#6a0dad",
 	};
 
 	// this.plot = new Plot(document.getElementById("canvas-plot"), {
@@ -32,10 +36,10 @@ function Analysis(env, walkers, nodes, database) {
 
 	this.fineGrain = 1;
 
-	this.connectivity = new Connectivity(this.env, this.database);
+	this.connectivity = new Connectivity(env, nodes, database);
 }
 
-Analysis.prototype.combineFields = function() {
+Analysis.prototype.combineFields = function () {
 	let combinedField = generateField(this.env.size, 0);
 	for (var i = 0; i < this.env.size[0]; i++) {
 		for (let j = 0; j < this.env.size[1]; j++) {
@@ -47,7 +51,7 @@ Analysis.prototype.combineFields = function() {
 	this.combinedField = combinedField;
 };
 
-Analysis.prototype.computeMaxima = function() {
+Analysis.prototype.computeMaxima = function () {
 	this.maxima.min = Math.min(...this.combinedField.flat());
 	this.maxima.max = Math.max(...this.combinedField.flat());
 	this.maxima.max =
@@ -55,42 +59,29 @@ Analysis.prototype.computeMaxima = function() {
 			? this.maxMinThreshold
 			: this.maxima.max;
 };
-Analysis.prototype.run = function() {
+Analysis.prototype.run = function () {
 	this.combineFields();
 	this.computeMaxima();
-	if (this.env.timeSinceStart % 20 == 0) {
+	this.checkEvents();
+};
+
+Analysis.prototype.checkEvents = function () {
+	if (this.env.timeSinceStart % this.interval === 0) {
 		this.edge();
 	}
 };
 
-Analysis.prototype.edge = function() {
-	const { time, y } = this.connectivity.run(this.combinedField, {
-		time: this.env.timeSinceStart
+Analysis.prototype.edge = function () {
+	this.connectivity.run(this.combinedField, {
+		time: this.env.timeSinceStart,
+		version: this.version,
 	});
 };
 
-Analysis.prototype.plot = function(variable) {
-	// eg: variable = "connectivity"
-};
-
-Analysis.prototype.clear = function() {
+Analysis.prototype.clear = function () {
+	this.version = uuid();
+	this.sessions.push(this.version);
 	this.combinedField = generateField(this.env.size, 0);
 };
-
-function download(filename, text) {
-	var element = document.createElement("a");
-	element.setAttribute(
-		"href",
-		"data:text/plain;charset=utf-8," + encodeURIComponent(text)
-	);
-	element.setAttribute("download", filename);
-
-	element.style.display = "none";
-	document.body.appendChild(element);
-
-	element.click();
-
-	document.body.removeChild(element);
-}
 
 export default Analysis;

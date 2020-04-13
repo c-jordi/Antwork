@@ -60,13 +60,14 @@ function getParamSubset(controller) {
 	console.log("GETTING PARAM:", controller.nodes);
 	const {
 		walkers: { numberOfAgents },
-		env: { alpha, beta, k, epsilon, s0 },
+		env: { alpha, beta, k, epsilon, s0, size },
 		nodes: { layoutId },
 	} = controller;
 	return {
 		numberOfAgents,
 		alpha,
 		beta,
+		size,
 		k,
 		epsilon,
 		s0,

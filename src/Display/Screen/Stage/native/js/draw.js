@@ -12,7 +12,7 @@ function DrawFunc(controller, width, height) {
 	this.versions = {
 		ui: -1,
 		game: -1,
-		back: -1
+		back: -1,
 	};
 	this.draw = this.draw.bind(this);
 }
@@ -21,7 +21,7 @@ function DrawFunc(controller, width, height) {
 // ATOMIC FUNCTIONS
 /////
 
-DrawFunc.prototype.setup = function({ game, ui, back }) {
+DrawFunc.prototype.setup = function ({ game, ui, back }) {
 	if (this.isSetup) return;
 	this.uiCtx = ui.getContext("2d");
 	this.gameCtx = game.getContext("2d");
@@ -37,7 +37,7 @@ DrawFunc.prototype.setup = function({ game, ui, back }) {
 	this.drawNodes();
 };
 
-DrawFunc.prototype.adjustScale = function() {
+DrawFunc.prototype.adjustScale = function () {
 	const [x, y] = this.controller.env.size;
 	const scalex = this.width / x;
 	const scaley = this.height / y;
@@ -46,7 +46,7 @@ DrawFunc.prototype.adjustScale = function() {
 	this.offsetY = Math.floor((this.height - y * this.scale) / 2);
 };
 
-DrawFunc.prototype.fill = function(ctx, color) {
+DrawFunc.prototype.fill = function (ctx, color) {
 	ctx.strokeColor = color;
 	ctx.fillStyle = color;
 	ctx.fillRect(
@@ -57,7 +57,7 @@ DrawFunc.prototype.fill = function(ctx, color) {
 	);
 };
 
-DrawFunc.prototype.point = function(ctx, color, coord) {
+DrawFunc.prototype.point = function (ctx, color, coord) {
 	ctx.strokeStyle = color;
 	ctx.fillStyle = color;
 	ctx.fillRect(
@@ -72,8 +72,8 @@ DrawFunc.prototype.point = function(ctx, color, coord) {
 // COMPONENT FUNCTIONS
 ////
 
-DrawFunc.prototype.drawWalkers = function() {
-	const drawWalker = walker => {
+DrawFunc.prototype.drawWalkers = function () {
+	const drawWalker = (walker) => {
 		const [latx, laty] = this.controller.env.setPosition(walker.x, walker.y);
 		this.point(
 			this.gameCtx,
@@ -84,14 +84,14 @@ DrawFunc.prototype.drawWalkers = function() {
 	this.controller.walkers.apply(drawWalker);
 };
 
-DrawFunc.prototype.drawNodes = function() {
+DrawFunc.prototype.drawNodes = function () {
 	// if (this.controller.updates.back === this.versions.back) return;
 	// this.versions.back = this.controller.updates.back;
 	const { positive, negative } = this.controller.env.nodesCenter;
 	const [x, y] = this.controller.env.size;
 	positive
-		.filter(coord => coord[0] <= x + 1 && coord[1] <= y + 1)
-		.forEach(coord => {
+		.filter((coord) => coord[0] <= x + 1 && coord[1] <= y + 1)
+		.forEach((coord) => {
 			this.point(
 				this.uiCtx,
 				this.controller.analysis.displayOptions.positiveColor,
@@ -99,8 +99,8 @@ DrawFunc.prototype.drawNodes = function() {
 			);
 		});
 	negative
-		.filter(coord => coord[0] <= x + 1 && coord[1] <= y + 1)
-		.forEach(coord => {
+		.filter((coord) => coord[0] <= x + 1 && coord[1] <= y + 1)
+		.forEach((coord) => {
 			this.point(
 				this.uiCtx,
 				this.controller.analysis.displayOptions.negativeColor,
@@ -110,7 +110,7 @@ DrawFunc.prototype.drawNodes = function() {
 	this.controller.updates.back = false;
 };
 
-DrawFunc.prototype.drawCombinedFields = function() {
+DrawFunc.prototype.drawCombinedFields = function () {
 	for (let x = 0; x < this.controller.analysis.combinedField.length; x++) {
 		for (let y = 0; y < this.controller.analysis.combinedField[x].length; y++) {
 			const fieldStrength = this.controller.analysis.combinedField[x][y];
@@ -126,7 +126,7 @@ DrawFunc.prototype.drawCombinedFields = function() {
 	}
 };
 
-DrawFunc.prototype.drawPositiveField = function() {
+DrawFunc.prototype.drawPositiveField = function () {
 	for (let x = 0; x < this.controller.env.fields.positive[0].length; x++) {
 		for (let y = 0; y < this.controller.env.fields.positive[0][x].length; y++) {
 			const fieldStrength = this.controller.env.fields.positive[0][x][y];
@@ -142,7 +142,7 @@ DrawFunc.prototype.drawPositiveField = function() {
 	}
 };
 
-DrawFunc.prototype.drawNegativeField = function() {
+DrawFunc.prototype.drawNegativeField = function () {
 	for (let x = 0; x < this.controller.env.fields.negative[0].length; x++) {
 		for (let y = 0; y < this.controller.env.fields.negative[0][x].length; y++) {
 			const fieldStrength = this.controller.env.fields.negative[0][x][y];
@@ -158,6 +158,12 @@ DrawFunc.prototype.drawNegativeField = function() {
 	}
 };
 
+DrawFunc.prototype.clearAll = function () {
+	this.uiCtx.clearRect(0, 0, this.width, this.height);
+	this.gameCtx.clearRect(0, 0, this.width, this.height);
+	this.backCtx.clearRect(0, 0, this.width, this.height);
+};
+
 ////
 // HIGHLEVEL FUNCTIONS
 ////
@@ -165,7 +171,8 @@ DrawFunc.prototype.drawNegativeField = function() {
 /**  Draws the stage according to the display object
  * @param  {Object} dO displayOptions
  */
-DrawFunc.prototype.draw = function(dO) {
+DrawFunc.prototype.draw = function (dO) {
+	this.clearAll();
 	if (dO.showNodes) this.drawNodes();
 	if (dO.showCombinedFields) this.drawCombinedFields();
 	if (dO.showPositiveField) this.drawPositiveField();

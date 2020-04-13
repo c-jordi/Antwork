@@ -3,11 +3,11 @@ import { simulationContext } from "../../../../Simulation/context/SimulationCont
 import { drawNodes } from "./draw";
 import "./Preset.css";
 
-const Preset = ({ title, nodes, size, params, closeMenu, name }) => {
+const Preset = ({ title, nodes, size, params, events, closeMenu, name }) => {
 	const canvasRef = useRef();
 	const { controller } = useContext(simulationContext);
 	const onClick = () => {
-		controller.setLayout(nodes, size, params, name);
+		controller.setLayout(nodes, size, params, name, events);
 		closeMenu();
 	};
 

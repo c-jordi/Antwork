@@ -2,8 +2,6 @@ import { copy } from "../../utils/tools";
 import generateField from "../../utils/generateField";
 
 function BurningTree(matrix, campfires) {
-	// matrix: Binary map of the trees
-	// campfires: Location where the first is started
 	this.rows = matrix.length;
 	this.cols = matrix[0].length;
 	this.forest = matrix;
@@ -15,14 +13,15 @@ function BurningTree(matrix, campfires) {
 	return this.connect();
 }
 
-BurningTree.prototype.connect = function() {
-	this.A = this.campfires.map(campfire => this.burnForest(campfire));
+BurningTree.prototype.connect = function () {
+	this.A = this.campfires.map((campfire) => this.burnForest(campfire));
 	return this.A;
 };
 
-BurningTree.prototype.burnForest = function(campfire) {
+BurningTree.prototype.burnForest = function (campfire) {
 	// Returns adjacency matrix
 	const { name, state, coord } = campfire;
+
 	let forest = copy(this.forest);
 
 	let stack = [[...coord, -1]];
@@ -31,7 +30,7 @@ BurningTree.prototype.burnForest = function(campfire) {
 		this.explore(forest, stack);
 	}
 
-	return this.campfires.map(camp => {
+	return this.campfires.map((camp) => {
 		const [xtar, ytar] = camp.coord;
 		const filtered = this.getNeighbors(xtar, ytar, 1).filter(([x, y]) => {
 			return forest[x][y] > 1 && camp.name != campfire.name;
@@ -41,7 +40,7 @@ BurningTree.prototype.burnForest = function(campfire) {
 	});
 };
 
-BurningTree.prototype.explore = function(forest, stack) {
+BurningTree.prototype.explore = function (forest, stack) {
 	const [x, y, step] = stack.shift();
 
 	if (forest[x][y] == 0) {
@@ -60,7 +59,7 @@ BurningTree.prototype.explore = function(forest, stack) {
 
 	if (step == -1) {
 		const neighbors = this.getNeighbors(x, y, 1);
-		neighbors.forEach(neighbor => {
+		neighbors.forEach((neighbor) => {
 			const [x, y] = neighbor;
 			if (forest[x][y] == 1) {
 				stack.push([x, y, 2]);
@@ -68,7 +67,7 @@ BurningTree.prototype.explore = function(forest, stack) {
 		});
 	} else {
 		const neighbors = this.getNeighbors(x, y);
-		neighbors.forEach(neighbor => {
+		neighbors.forEach((neighbor) => {
 			const [x, y] = neighbor;
 			if (forest[x][y] == 1) {
 				stack.push([x, y, step + 1]);
@@ -77,9 +76,9 @@ BurningTree.prototype.explore = function(forest, stack) {
 	}
 };
 
-BurningTree.prototype.checkCampfire = function(coord) {
-	return this.campfires.filter(campfire => {
-		this.getNeighbors(campfire.coord, 1).filter(neighbor => {
+BurningTree.prototype.checkCampfire = function (coord) {
+	return this.campfires.filter((campfire) => {
+		this.getNeighbors(campfire.coord, 1).filter((neighbor) => {
 			return neighbor[0] == coord[0] && neighbor[1] == coord[1];
 		});
 		const condition =
@@ -91,7 +90,7 @@ BurningTree.prototype.checkCampfire = function(coord) {
 	}).length;
 };
 
-BurningTree.prototype.getNeighbors = function(x, y, diag = 0) {
+BurningTree.prototype.getNeighbors = function (x, y, diag = 0) {
 	// diag : 1 , returns diag
 
 	const up = (y - 1 + this.cols) % this.cols;
@@ -103,7 +102,7 @@ BurningTree.prototype.getNeighbors = function(x, y, diag = 0) {
 		[left, up],
 		[left, down],
 		[right, up],
-		[right, down]
+		[right, down],
 	];
 
 	if (diag) return [[x, down], [x, up], [left, y], [right, y], ...diags];
@@ -111,8 +110,21 @@ BurningTree.prototype.getNeighbors = function(x, y, diag = 0) {
 		[x, down],
 		[x, up],
 		[left, y],
-		[right, y]
+		[right, y],
 	];
 };
+
+function download(filename, text) {
+	var element = document.createElement("a");
+	element.setAttribute(
+		"href",
+		"data:text/plain;charset=utf-8," + encodeURIComponent(text)
+	);
+	element.setAttribute("download", filename);
+	element.style.display = "none";
+	document.body.appendChild(element);
+	element.click();
+	document.body.removeChild(element);
+}
 
 export default BurningTree;

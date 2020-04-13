@@ -18,14 +18,15 @@ const ControlBar = ({ Link }) => {
 
 	const clickRestart = () => {
 		controller.engine.restart();
+		controller.analysis.clear();
 	};
 
-	const progressStyle = el => {
+	const progressStyle = (el) => {
 		const stage = Math.floor(stats.counter / 500) % 2;
 		if (el) {
 			return {
 				backgroundColor: stage ? "#2196f3" : "#87caff",
-				width: `${(stats.counter / 5) % 100}%`
+				width: `${(stats.counter / 5) % 100}%`,
 			};
 		}
 		return { backgroundColor: stage ? "#87caff" : "#2196f3" };

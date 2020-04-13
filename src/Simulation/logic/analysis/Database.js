@@ -1,17 +1,19 @@
-function Database(name) {
+function Database(name, callback) {
 	this.name = name;
+	this.callback = callback || function () {};
 }
 
-Database.prototype.push = function(name, value) {
+Database.prototype.push = function (name, value) {
 	// adds the value the end of the array of name
-	if (this[name] == undefined) {
+	if (this[name] === undefined) {
 		this[name] = [];
 	}
+	this.callback({ name, value });
 	this[name].push(value);
 };
 
-Database.prototype.save = function(name, value) {
-	if (this["_" + name] == undefined) {
+Database.prototype.save = function (name, value) {
+	if (this["_" + name] === undefined) {
 		this["_" + name] = {};
 	}
 	const round = Math.round(value);

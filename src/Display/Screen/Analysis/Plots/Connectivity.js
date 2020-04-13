@@ -2,23 +2,32 @@ const margin = {
 	top: 100,
 	left: 100,
 	bottom: 100,
-	right: 50
+	right: 50,
 };
 
 const offset = {
 	x: 20,
-	y: 20
+	y: 20,
 };
 
 const axisStep = {
 	x: 500,
-	y: 10
+	y: 10,
 };
 
 const tickStep = {
 	x: 100,
-	y: 1
+	y: 1,
 };
+
+const colorArray = [
+	"rgb(135, 202, 255)",
+	"rgb(255, 152, 0)",
+	"rgb(233, 30, 99)",
+	"rgb(205, 220, 57)",
+	"rgb(156, 39, 176)",
+	"rgb(0, 150, 138)",
+];
 
 const tickTextSize = "30";
 
@@ -45,6 +54,7 @@ function Plot(canvas) {
 	this.xMousePosition = null;
 	this.yMousePosition = null;
 	this.cursorTime = null;
+	this.versions = [];
 
 	this.clear();
 	this.setAxis();
@@ -52,63 +62,76 @@ function Plot(canvas) {
 	this.setMousePosition = this.setMousePosition.bind(this);
 }
 
-Plot.prototype.clear = function() {
+Plot.prototype.clear = function () {
 	this.ctx.clearRect(0, 0, this.width, this.height);
 };
 
-Plot.prototype.setAxis = function() {
+Plot.prototype.setAxis = function () {
 	this.setXAxis();
 	this.setYAxis();
 };
 
-Plot.prototype.setYAxis = function() {
+Plot.prototype.setYAxis = function () {
 	const yAxisPoints = [this.origin, this.YAxisEnd];
 	this.useAxisLineStyle();
 	this.makeLineThroughPoints(yAxisPoints);
 };
 
-Plot.prototype.setXAxis = function() {
+Plot.prototype.setXAxis = function () {
 	const xAxisPoints = [this.origin, this.XAxisEnd];
 	this.useAxisLineStyle();
 	this.makeLineThroughPoints(xAxisPoints);
 };
 
-Plot.prototype.makeLineThroughPoints = function(points) {
+Plot.prototype.makeLineThroughPoints = function (points) {
 	this.ctx.beginPath();
 	this.ctx.moveTo(points[0][0], points[0][1]);
-	points.slice(1).forEach(coord => this.ctx.lineTo(coord[0], coord[1]));
+	points.slice(1).forEach((coord) => this.ctx.lineTo(coord[0], coord[1]));
 	this.ctx.stroke();
 	this.ctx.closePath();
 };
 
-Plot.prototype.useAxisLineStyle = function() {
+Plot.prototype.useAxisLineStyle = function () {
 	this.ctx.lineWidth = 2;
 	this.ctx.strokeStyle = "white";
 };
 
-Plot.prototype.draw = function(data) {
+Plot.prototype.draw = function (data) {
 	if (data !== undefined) {
 		this.data = data;
 	}
+	this.findVersions();
 	this.setScale();
 	this.addAxisTicks();
 	this.addPoints();
 };
 
-Plot.prototype.setScale = function() {
+Plot.prototype.findVersions = function () {
+	this.versions = [];
+	this.data.forEach(({ version }) => {
+		if (!this.versions.includes(version)) {
+			this.versions.push(version);
+		}
+	});
+	this.versions = this.versions.map((version, i) => {
+		return { version, color: colorArray[i % colorArray.length] };
+	});
+};
+
+Plot.prototype.setScale = function () {
 	this.getMaxValues();
 	this.roundMaxValues();
 	this.determineScale();
 };
 
-Plot.prototype.getMaxValues = function() {
+Plot.prototype.getMaxValues = function () {
 	this.maxX = this.getMaxValueForProperty("time");
 	this.maxY = this.getMaxValueForProperty("E");
 };
 
-Plot.prototype.getMaxValueForProperty = function(property) {
+Plot.prototype.getMaxValueForProperty = function (property) {
 	let max = null;
-	this.data.forEach(point => {
+	this.data.forEach((point) => {
 		if (max == null) {
 			max = point[property];
 		} else if (point[property] > max) {
@@ -118,50 +141,50 @@ Plot.prototype.getMaxValueForProperty = function(property) {
 	return max ? max : 0;
 };
 
-Plot.prototype.roundMaxValues = function() {
+Plot.prototype.roundMaxValues = function () {
 	this.roundedWidth = (Math.floor(this.maxX / axisStep.x) + 1) * axisStep.x;
 	this.roundedHeight = (Math.floor(this.maxY / axisStep.y) + 1) * axisStep.y;
 };
 
-Plot.prototype.determineScale = function() {
+Plot.prototype.determineScale = function () {
 	this.xScale = this.getXScale();
 	this.yScale = this.getYScale();
 };
 
-Plot.prototype.getXScale = function() {
+Plot.prototype.getXScale = function () {
 	const adjustedWidth = this.width - margin.left - margin.right - offset.x;
 	return adjustedWidth / this.roundedWidth;
 };
 
-Plot.prototype.getYScale = function() {
+Plot.prototype.getYScale = function () {
 	const adjustedHeight = this.height - margin.top - margin.bottom - offset.y;
 	return adjustedHeight / this.roundedHeight;
 };
 
-Plot.prototype.addAxisTicks = function() {
+Plot.prototype.addAxisTicks = function () {
 	this.addXTicks();
 	this.addYTicks();
 };
 
-Plot.prototype.y = function(y) {
+Plot.prototype.y = function (y) {
 	return Math.round(this.height - margin.bottom - offset.y - y * this.yScale);
 };
 
-Plot.prototype.yinv = function(yPixel) {
+Plot.prototype.yinv = function (yPixel) {
 	return Math.round(
 		(this.height - margin.bottom - offset.y - yPixel) / this.yScale
 	);
 };
 
-Plot.prototype.x = function(x) {
+Plot.prototype.x = function (x) {
 	return Math.round(margin.left + offset.x + x * this.xScale);
 };
 
-Plot.prototype.xinv = function(xPixel) {
+Plot.prototype.xinv = function (xPixel) {
 	return Math.round((xPixel - margin.left - offset.x) / this.xScale);
 };
 
-Plot.prototype.addXTicks = function() {
+Plot.prototype.addXTicks = function () {
 	const numberOfTicks = Math.ceil(this.roundedWidth / tickStep.x);
 	for (let i = 0; i < numberOfTicks; i += 1 + Math.floor(numberOfTicks / 10)) {
 		const value = i * tickStep.x;
@@ -174,7 +197,7 @@ Plot.prototype.addXTicks = function() {
 	}
 };
 
-Plot.prototype.addYTicks = function() {
+Plot.prototype.addYTicks = function () {
 	const numberOfTicks = Math.ceil(this.roundedHeight / tickStep.y);
 	for (let j = 0; j < numberOfTicks; j += 1 + Math.floor(numberOfTicks / 10)) {
 		const value = j * tickStep.y;
@@ -187,59 +210,60 @@ Plot.prototype.addYTicks = function() {
 	}
 };
 
-Plot.prototype.drawVerticalTick = function(coord) {
+Plot.prototype.drawVerticalTick = function (coord) {
 	this.useTickLineStyle();
 	const tickEndPoint = [coord[0], coord[1] + tickLength];
 	const linePoints = [coord, tickEndPoint];
 	this.makeLineThroughPoints(linePoints);
 };
 
-Plot.prototype.writeTickText = function(coord, text) {
+Plot.prototype.writeTickText = function (coord, text) {
 	this.useTickTextStyle();
 	this.ctx.fillText(text, coord[0], coord[1]);
 };
-Plot.prototype.useTickTextStyle = function() {
+Plot.prototype.useTickTextStyle = function () {
 	this.ctx.font = tickTextSize + "px monospace";
 	this.ctx.fillStyle = "white";
 };
 
-Plot.prototype.drawHorizontalTick = function(coord) {
+Plot.prototype.drawHorizontalTick = function (coord) {
 	this.useTickLineStyle();
 	const tickEndPoint = [coord[0] - tickLength, coord[1]];
 	const linePoints = [coord, tickEndPoint];
 	this.makeLineThroughPoints(linePoints);
 };
 
-Plot.prototype.useTickLineStyle = function() {
+Plot.prototype.useTickLineStyle = function () {
 	this.ctx.lineWidth = 1;
 	this.ctx.strokeStyle = "white";
 };
 
-Plot.prototype.addPoints = function() {
-	this.usePointStyle();
+Plot.prototype.addPoints = function () {
 	this.drawPoints();
 };
 
-Plot.prototype.usePointStyle = function() {
-	this.ctx.fillStyle = "rgb(99, 186, 255)";
+Plot.prototype.usePointStyle = function (label) {
+	const version = this.versions.find(({ version }) => version === label);
+	this.ctx.fillStyle = version.color;
 };
 
-Plot.prototype.drawPoints = function() {
-	this.data.forEach(el => {
+Plot.prototype.drawPoints = function () {
+	this.data.forEach((el) => {
 		const x = this.x(el.time);
 		const y = this.y(el.E);
+		this.usePointStyle(el.version);
 		this.drawCircle([x, y]);
 	});
 };
 
-Plot.prototype.drawCircle = function(coord) {
+Plot.prototype.drawCircle = function (coord) {
 	this.ctx.beginPath();
 	this.ctx.arc(...coord, pointSize, 0, 2 * Math.PI);
 	this.ctx.fill();
 	this.ctx.closePath();
 };
 
-Plot.prototype.setMousePosition = function({ layerX, layerY }) {
+Plot.prototype.setMousePosition = function ({ layerX, layerY }) {
 	this.xMousePosition = Math.round(
 		(layerX * this.width) / this.canvas.offsetWidth
 	);
@@ -249,7 +273,7 @@ Plot.prototype.setMousePosition = function({ layerX, layerY }) {
 	this.processMouse();
 };
 
-Plot.prototype.processMouse = function() {
+Plot.prototype.processMouse = function () {
 	this.clearCursor();
 	if (this.isMouseInChart()) {
 		this.checkMouseNeighborhood();
@@ -257,13 +281,13 @@ Plot.prototype.processMouse = function() {
 	}
 };
 
-Plot.prototype.clearCursor = function() {
+Plot.prototype.clearCursor = function () {
 	this.clear();
 	this.setAxis();
 	this.draw();
 };
 
-Plot.prototype.isMouseInChart = function() {
+Plot.prototype.isMouseInChart = function () {
 	const xCondition =
 		margin.left <= this.xMousePosition &&
 		this.xMousePosition <= this.width - margin.right;
@@ -274,12 +298,12 @@ Plot.prototype.isMouseInChart = function() {
 	return xCondition && yCondition;
 };
 
-Plot.prototype.checkMouseNeighborhood = function() {
+Plot.prototype.checkMouseNeighborhood = function () {
 	let distance = cursorResolutionDistance;
 	let neighborTime = null;
 	this.data
-		.map(point => point.time)
-		.forEach(time => {
+		.map((point) => point.time)
+		.forEach((time) => {
 			const delay = Math.abs(this.x(time) - this.xMousePosition);
 			if (delay < distance) {
 				distance = delay;
@@ -291,17 +315,17 @@ Plot.prototype.checkMouseNeighborhood = function() {
 	this.mouseNeighborTime = neighborTime ? neighborTime : null;
 };
 
-Plot.prototype.setCursor = function() {
+Plot.prototype.setCursor = function () {
 	if (this.isMouseNearPoint()) {
 		this.drawCursor();
 	}
 };
 
-Plot.prototype.isMouseNearPoint = function() {
+Plot.prototype.isMouseNearPoint = function () {
 	return this.minMouseToPointDistance < cursorResolutionDistance ? true : false;
 };
 
-Plot.prototype.drawCursor = function() {
+Plot.prototype.drawCursor = function () {
 	this.useCursorStyle();
 	const xCursor = this.x(this.mouseNeighborTime);
 	const cursorStart = [xCursor, this.y(0)];
@@ -310,7 +334,7 @@ Plot.prototype.drawCursor = function() {
 	this.makeLineThroughPoints([cursorStart, cursorEnd]);
 };
 
-Plot.prototype.useCursorStyle = function() {
+Plot.prototype.useCursorStyle = function () {
 	this.ctx.lineWidth = 4;
 	this.ctx.strokeStyle = "rgba(0, 126, 226,0.7)";
 };

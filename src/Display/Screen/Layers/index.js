@@ -3,13 +3,14 @@ import { Switch, ColorInput } from "../Inputs";
 
 const Layers = ({ controller }) => {
 	const [state, setState] = useState(controller.getLayers());
-	const inputFor = name => ({
+	const inputFor = (name) => ({
 		name,
 		state: state[name],
-		setState: value => {
+		setState: (value) => {
+			console.log("Setting:", name, value);
 			controller.setLayers(name, value);
 			setState({ ...state, [name]: value });
-		}
+		},
 	});
 	return (
 		<div className="page layers">
@@ -44,6 +45,8 @@ const Layers = ({ controller }) => {
 					label={"Negative"}
 					{...inputFor("negativeColor")}
 				></ColorInput>
+				<div className="subtitle">Options</div>
+				<Switch label={"Slow Motion"} {...inputFor("slowMo")}></Switch>
 			</div>
 		</div>
 	);

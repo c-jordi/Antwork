@@ -1,6 +1,6 @@
 import Loop from "../animation/Loop";
 
-function Controller({ walkers, analysis, engine, env, nodes }) {
+function Controller({ walkers, analysis, engine, env, nodes, worker = false }) {
 	this.walkers = walkers;
 	this.analysis = analysis;
 	this.engine = engine;
@@ -8,17 +8,22 @@ function Controller({ walkers, analysis, engine, env, nodes }) {
 	this.env = env;
 	this.loop = undefined;
 	this.loopCallback = undefined;
+	this.slowMo = false;
+	this.worker = worker;
 
 	// Keeps track of updates
 	this.updates = {
 		ui: 0,
 		game: 0,
-		back: 0
+		back: 0,
 	};
 	this.setRequestId = this.setRequestId.bind(this);
 	this.useCallback = this.useCallback.bind(this);
+	this.useRedraw = this.useRedraw.bind(this);
 	this.toggleEngine = this.toggleEngine.bind(this);
 	this.setContrast = this.setContrast.bind(this);
+	this.setParams = this.setParams.bind(this);
+	this.setLayout = this.setLayout.bind(this);
 }
 
 ///////////////////////////////////////////////////////////////
@@ -28,7 +33,7 @@ function Controller({ walkers, analysis, engine, env, nodes }) {
 /**
  * Gets the variables of the environment
  */
-Controller.prototype.getEnv = function(obj) {
+Controller.prototype.getEnv = function (obj) {
 	const { size, alpha, beta, k, epsilon, s0 } = this.env;
 	const { numberOfAgents } = this.walkers;
 	return JSON.parse(
@@ -40,7 +45,7 @@ Controller.prototype.getEnv = function(obj) {
  * Sets the variables of the environment
  */
 
-Controller.prototype.setEnv = function(
+Controller.prototype.setEnv = function (
 	{ size, numberOfAgents, alpha, beta, k, epsilon, s0 },
 	restart
 ) {
@@ -59,7 +64,7 @@ Controller.prototype.setEnv = function(
 /**
  * Gets the variables of the layers
  */
-Controller.prototype.getLayers = function() {
+Controller.prototype.getLayers = function () {
 	const {
 		showWalkers,
 		showNodes,
@@ -69,7 +74,7 @@ Controller.prototype.getLayers = function() {
 		positiveColor,
 		negativeColor,
 		defaultColor,
-		combinedColor
+		combinedColor,
 	} = this.analysis.displayOptions;
 
 	return {
@@ -81,15 +86,19 @@ Controller.prototype.getLayers = function() {
 		positiveColor,
 		negativeColor,
 		defaultColor,
-		combinedColor
+		combinedColor,
+		slowMo: copy(this.slowMo),
 	};
 };
 
 /**
  * Sets the variables of the layers
  */
-Controller.prototype.setLayers = function(name, value) {
+Controller.prototype.setLayers = function (name, value) {
 	switch (name) {
+		case "slowMo":
+			this.useSlowMo(value);
+			break;
 		default:
 			this.analysis.displayOptions[name] = value;
 			return;
@@ -99,22 +108,64 @@ Controller.prototype.setLayers = function(name, value) {
 /**
  * Sets the contrast of the layers
  */
-Controller.prototype.setContrast = function(contrast) {
+Controller.prototype.setContrast = function (contrast) {
 	this.analysis.fineGrain = contrast;
 };
 
 /**
+ * Sets the events for the analysis
+ */
+
+/**
  * Sets the variables for the layout
  */
-Controller.prototype.setLayout = function(nodes, size, params, key) {
+Controller.prototype.setLayout = function (nodes, size, params, key) {
 	this.nodes.list = nodes;
 	this.nodes.layoutId = key;
 	this.env.makeNodesCenter();
+	this.setParams(params);
 	if (this.env.size[0] !== size[0] || this.env.size[1] !== size[1]) {
 		this.env.size = size;
 		this.engine.restart();
-		console.log(this);
+		this.analysis.clear();
 	}
+	this.useRedraw();
+};
+
+Controller.prototype.setDefaultParams = function () {
+	if (this.worker) {
+		return;
+	}
+	this.useSlowMo(false);
+	this.analysis.displayOptions["showWalkers"] = false;
+};
+
+/**
+ * Sets the params for the layout
+ */
+Controller.prototype.setParams = function (params) {
+	this.setDefaultParams();
+	if (!Array.isArray(params)) {
+		return;
+	}
+	params.forEach((param) => {
+		switch (param.name) {
+			case "numberOfAgents":
+				this.walkers.setPopulation(+param.value);
+				break;
+			case "showWalkers":
+			case "showCombinedField":
+			case "showPositiveField":
+			case "showNegativeField":
+				this.analysis.displayOptions[param.name] = param.value;
+				break;
+			case "slowMo":
+				this.useSlowMo(+param.value);
+				break;
+			default:
+		}
+		console.log(params, this.analysis.displayOptions);
+	});
 };
 
 ///////////////////////////////////////////////////////////////
@@ -125,22 +176,29 @@ Controller.prototype.setLayout = function(nodes, size, params, key) {
  * Sets the id of the frame that is requested for animation
  * @param  {Number} id Identifier of the frame
  */
-Controller.prototype.setRequestId = function(id) {
+Controller.prototype.setRequestId = function (id) {
 	this.reqId = id;
 };
 
 /**
  * Use the loop callback
  */
-Controller.prototype.useCallback = function(data) {
+Controller.prototype.useCallback = function (data) {
 	this.loopCallback(data);
 };
-
+/**
+ * Use the redraw callback
+ */
+Controller.prototype.useRedraw = function () {
+	if (this.redraw) {
+		this.redraw();
+	}
+};
 /**
  * Sets the id of the frame that is requested for animation
  * @param  {Number} id Identifier of the frame
  */
-Controller.prototype.setRequestId = function(id) {
+Controller.prototype.setRequestId = function (id) {
 	this.reqId = id;
 };
 
@@ -149,16 +207,25 @@ Controller.prototype.setRequestId = function(id) {
  * @param  {String} id Identifier of the loop
  * @param  {Function} callback Function that is executed at every frame
  */
-Controller.prototype.setupLoop = function(id, callback) {
+Controller.prototype.setupLoop = function (id, callback) {
 	this.loopCallback = callback;
 	if (this.loop instanceof Loop) return;
-	this.loop = new Loop(id, this.useCallback, this.setRequestId);
+	this.loop = new Loop(id, this.useCallback, this.useRedraw, this.setRequestId);
+};
+
+/**
+ * Sets up the loop in the controller
+ * @param  {Function} redraw Redraw the native stage
+ */
+Controller.prototype.setupRedraw = function (callback) {
+	this.redraw = callback;
+	console.log("Setup:", this.redraw);
 };
 
 /**
  * Stops the loop
  */
-Controller.prototype.stopLoop = function() {
+Controller.prototype.stopLoop = function () {
 	if (this.loop instanceof Loop) {
 		window.cancelAnimationFrame(this.reqId);
 		this.reqId = undefined;
@@ -168,10 +235,21 @@ Controller.prototype.stopLoop = function() {
 /**
  * Starts the loop
  */
-Controller.prototype.startLoop = function() {
+Controller.prototype.startLoop = function () {
 	if (this.loop instanceof Loop && this.reqId === undefined) {
 		this.loop.start();
 	}
+};
+
+Controller.prototype.useSlowMo = function (state = undefined) {
+	if (state === undefined) {
+		this.slowMo = !this.slowMo;
+	} else {
+		this.slowMo = state;
+	}
+	this.stopLoop();
+	this.loop.slowMo(this.slowMo);
+	this.startLoop();
 };
 
 ///////////////////////////////////////////////////////////////
@@ -181,7 +259,7 @@ Controller.prototype.startLoop = function() {
 /**
  * Starts and stops the simulation engine
  */
-Controller.prototype.toggleEngine = function(state) {
+Controller.prototype.toggleEngine = function (state) {
 	if (state === undefined) {
 		this.engine.running = !this.engine.running;
 	} else {
@@ -193,8 +271,12 @@ Controller.prototype.toggleEngine = function(state) {
  * Sets the population number
  * @param  {Number} population The first number
  */
-Controller.prototype.setPopulation = function(population) {
+Controller.prototype.setPopulation = function (population) {
 	this.walkers.setPopulation(population);
 };
 
 export default Controller;
+
+function copy(val) {
+	return JSON.parse(JSON.stringify(val));
+}

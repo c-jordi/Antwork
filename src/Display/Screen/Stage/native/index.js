@@ -23,14 +23,19 @@ const NativeStage = ({ controller, updateStats, width, height }) => {
 		d.draw(controller.analysis.displayOptions);
 	};
 
+	const redraw = () => {
+		d.draw(controller.analysis.displayOptions);
+	};
+
 	const id = randomString();
 
 	const onCanvasLoad = () => {
 		d.setup({
 			ui: uiRef.current,
 			game: gameRef.current,
-			back: backgroundRef.current
+			back: backgroundRef.current,
 		});
+		controller.setupRedraw(redraw);
 		controller.setupLoop(id, callback);
 	};
 
