@@ -26,7 +26,12 @@ function sendBackData(data) {
 	if (data.name === "connectivity") {
 		self.postMessage({
 			fn: "update",
-			data: [data.value.time, data.value.E, data.value.version],
+			data: [
+				data.value.time,
+				data.value.E,
+				data.value.version,
+				data.value.A,
+			].flat(),
 		});
 	}
 }
@@ -65,7 +70,13 @@ function init(data) {
 		nodes,
 		worker: true,
 	});
-	controller.setLayout(preset.nodes, preset.size, {});
+	controller.setLayout(
+		preset.nodes,
+		preset.size,
+		[],
+		preset.events,
+		preset.name
+	);
 
 	runSimulation(controller, frames, runs);
 

@@ -42,3 +42,13 @@
 	padding: 0.5rem;
 	background-color: #20232a;
 }
+
+.total-metrics {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.buttons > * {
+	margin: 0 0.5rem;
+}

@@ -42,20 +42,49 @@
 
 - ~~Remove periodic conditions on the switch~~
 - ~~Change the color or erase the connectivity graph~~
-- Make the time switch condition
-- make all the graphs needed for analysis
-- Adjust the report to Giacomo's recommendations
+- ~~Make the time switch condition~~
+- Make all the graphs needed for analysis
+- ~~Adjust the report to Giacomo's recommendations~~
 - ~~Add the feature to adjust fps~~
-- Make the shortcut module for the report
-- Try to include the markdown in the webpage
-
-### To run:
-
-- For: 6,7,8,10,11,12,13
-  http://127.0.0.1:8080/api?numberOfAgents=4500&alpha=1&beta=0.2&size=100%2C100&k=0.03&epsilon=0.5&s0=10000&layoutId=9&runs=100&frames=500
+- ~~Make the shortcut module for the report~~
+- ~~Try to include the markdown in the webpage~~
 
 ## Tue 14.04:
 
+- ~~Make the svg with a timer, that switch between all the states every 4 secs~~
+- Make the repo public
+- Place on personal website jordi.co
+
+### To run:
+
+- For: 12,13,14,15,16,17,18
+  http://127.0.0.1:8080/api?numberOfAgents=4500&alpha=1&beta=0.2&size=100%2C100&k=0.03&epsilon=0.5&s0=10000&layoutId=9&runs=100&frames=500
+
+- 4 figures:
+
+- Trying to find the optimal density:
+  http://127.0.0.1:8080/api?numberOfAgents=400&alpha=1&beta=0.2&size=90%2C70&k=0.03&epsilon=0.5&s0=10000&layoutId=NAND&runs=50&frames=1000
+  with:
+  - 2000,
+  - 2500,
+  - 3000,
+  - 3250
+  - 3500
+  - 4000
+
 ## Wed 15.04:
 
-- Send the report
+- Finish the analysis
+  - ~~How the density affects the average connectivity~~
+  - ~~How can the position of the nodes be optimized to improve reliability in the formation of the desired network~~
+    - ~~you can keep the 800 interval, 3250 nodes, export the adjacency matrix~~
+    - ~~For this measure which links tend to form most often~~
+  - ~~How long would it take for it to switch between the AND gate and the NAND gate ~~
+- ~~Add the bibliography~~
+- Upload the website to c-jordi.github
+- ~~Connect your page to your domain name~~
+- Send email to Giacomo
+
+## If we have time:
+
+http://127.0.0.1:8080/api?numberOfAgents=4500&alpha=1&beta=0.2&size=100%2C100&k=0.03&epsilon=0.5&s0=10000&layoutId=22&runs=50&frames=10000

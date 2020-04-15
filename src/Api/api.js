@@ -43,7 +43,7 @@ function runParrallelSimulation(frames, runs, query, preset) {
 				workerStatus += 1;
 				if (workerStatus === numberOfWorkers) {
 					download(
-						`antwork_${query.layoutId}_${frames}_${runs}.txt`,
+						`antwork_${query.layoutId}id_${query.numberOfAgents}a_${frames}f_${runs}f.txt`,
 						JSON.stringify(dataOutput)
 					);
 				}

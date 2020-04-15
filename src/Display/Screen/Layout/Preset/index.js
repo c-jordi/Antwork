@@ -7,7 +7,7 @@ const Preset = ({ title, nodes, size, params, events, closeMenu, name }) => {
 	const canvasRef = useRef();
 	const { controller } = useContext(simulationContext);
 	const onClick = () => {
-		controller.setLayout(nodes, size, params, name, events);
+		controller.setLayout(nodes, size, params, events, name);
 		closeMenu();
 	};
 

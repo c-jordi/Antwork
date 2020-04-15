@@ -119,11 +119,18 @@ Controller.prototype.setContrast = function (contrast) {
 /**
  * Sets the variables for the layout
  */
-Controller.prototype.setLayout = function (nodes, size, params, key) {
+Controller.prototype.setLayout = function (
+	nodes,
+	size,
+	params = [],
+	events = [],
+	key
+) {
 	this.nodes.list = nodes;
 	this.nodes.layoutId = key;
 	this.env.makeNodesCenter();
 	this.setParams(params);
+	this.setEvents(events);
 	if (this.env.size[0] !== size[0] || this.env.size[1] !== size[1]) {
 		this.env.size = size;
 		this.engine.restart();
@@ -164,8 +171,15 @@ Controller.prototype.setParams = function (params) {
 				break;
 			default:
 		}
-		console.log(params, this.analysis.displayOptions);
 	});
+};
+
+/**
+ * Sets the events
+ */
+
+Controller.prototype.setEvents = function (events) {
+	this.analysis.events = events;
 };
 
 ///////////////////////////////////////////////////////////////
@@ -219,7 +233,6 @@ Controller.prototype.setupLoop = function (id, callback) {
  */
 Controller.prototype.setupRedraw = function (callback) {
 	this.redraw = callback;
-	console.log("Setup:", this.redraw);
 };
 
 /**

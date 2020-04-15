@@ -69,6 +69,24 @@ Analysis.prototype.checkEvents = function () {
 	if (this.env.timeSinceStart % this.interval === 0) {
 		this.edge();
 	}
+	this.events.forEach((event) => {
+		if (this.env.timeSinceStart === event.t) {
+			this.applyEvent(event);
+		}
+	});
+};
+
+Analysis.prototype.applyEvent = function (event) {
+	switch (event.type) {
+		case "node":
+			this.nodes.toggle(event);
+			break;
+		case "parameter":
+			this.env[event.name] = +event.value;
+			break;
+		default:
+			break;
+	}
 };
 
 Analysis.prototype.edge = function () {

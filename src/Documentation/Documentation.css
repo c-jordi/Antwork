@@ -2,9 +2,13 @@
 	display: flex;
 	width: 100%;
 	align-items: flex-start;
-	max-width: 700px;
+	max-width: 800px;
 	flex-direction: column;
 	box-sizing: border-box;
+	text-align: left;
+	color: #353535;
+	line-height: 1.9rem;
+	margin-top: 4rem;
 }
 
 .text {
@@ -14,4 +18,13 @@
 	box-sizing: border-box;
 	padding-left: 4vw;
 	padding-right: 4vw;
+}
+
+.docs > section {
+	padding: 0 4vw;
+	box-sizing: border-box;
+}
+
+.doc-header {
+	font-style: italic;
 }

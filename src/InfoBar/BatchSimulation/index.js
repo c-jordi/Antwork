@@ -22,7 +22,7 @@ const BatchSimulation = ({ controller }) => {
 		const query = { ...paramSubset, runs, frames };
 		const serializedQuery = serialize(query);
 		window.open(
-			window.location.origin + `/api?${serializedQuery}`,
+			window.location.href + `/api?${serializedQuery}`,
 			"_blank",
 			"directories=no,titlebar=no,toolbar=no,location=no,status=no,menubar=no,scrollbars=no,resizable=no,width=540,height=230"
 		);
