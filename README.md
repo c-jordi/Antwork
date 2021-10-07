@@ -7,11 +7,10 @@ Welcome! Antwork is a brownian agent simulation tool that was developed in the c
 ├── build  
 ├── public  
 ├── src  
-│ ├── ... # React components and scripts used for the interface
-| ├── Documentation # Contains text and images that are rendered on the about page
-| └── Simulation
-│ ├── context # Provides the context for the interface
-│ └── logic # Contains the logic of the simulation
+│..├── Documentation # Contains text and images that are rendered on the about page.</br>
+│..└── Simulation</br>
+│....├─── context # Provides the context for the interface</br>
+│....└─── logic # Contains the logic of the simulation</br>
 └── ...
 
 ## Simulation engine starting template
@@ -45,21 +44,32 @@ for (var i = 0; i < 100; i++) {
 }
 ```
 
-## Available Scripts
+## Running the interactive dashboard
 
-In the project directory, you can run:
+### Installation
 
-### `yarn serve`
+1. Check if nodejs is installed.
 
-Runs the app in the development mode.<br />
+```bash
+node -v
+```
 
-### `yarn`
+If not you can install from [here](https://nodejs.org/en/).
 
-Installs the node modules used in the project
+2. Install yarn package manager
 
-### `yarn build`
+```bash
+npm install --global yarn
+```
 
-Builds the project
+### Getting started
+
+To run the dashboard with the interactive visualization
+
+```bash
+yarn install
+yarn start
+```
 
 ## Author
 
