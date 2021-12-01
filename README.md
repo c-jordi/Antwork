@@ -1,6 +1,10 @@
 # Antwork:
 
-Welcome! Antwork is a brownian agent simulation tool that was developed in the context of a semester project during my masters.
+Welcome! Antwork is a brownian agent simulation tool that was developed in the context of a Semester Project during my Masters.
+
+## Preview
+
+![Antwork Preview](./preview.gif)
 
 ## Folder Structure
 
